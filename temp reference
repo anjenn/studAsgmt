@@ -1,0 +1,109 @@
+import pandas as pd
+
+# Sample datasheet data
+data = {
+    'Group': ['A', 'A', 'B', 'B', 'C'],
+    'Value': [10, 15, 20, 25, 30]
+}
+
+# Define operation function
+def custom_operation(group):
+    # Example operation: calculating the sum of 'Value' column
+    return group['Value'].sum()
+
+# Function to perform grouping and operation
+def process_data(df):
+    # Group by 'Group' column
+    grouped = df.groupby('Group')
+    # Perform operation on each group
+    results = grouped.apply(custom_operation)
+    return results
+
+# Create DataFrame
+df = pd.DataFrame(data)
+
+# Call the function to process data
+results = process_data(df)
+
+print(results)
+
+
+# #########################
+import pandas as pd
+
+# Read CSV file into DataFrame
+df = pd.read_csv('your_file.csv', header=None, names=['Name', 'Student_Num', 'SubjA', 'SubjB', 'SubjC', 'SubjD', 'SubjE', 'SubjF', 'SubjG', 'SubjH', 'SubjI', 'SubjJ', 'SubjK', 'SubjL', 'SubjM', 'SubjN', 'SubjO', 'SubjP', 'SubjQ', 'SubjR', 'SubjS', 'SubjT', 'SubjU', 'SubjV', 'SubjW', 'SubjX', 'SubjY', 'SubjZ'])
+
+# Convert DataFrame to list of dictionaries
+data_dicts = df.to_dict(orient='records')
+
+# Function to extract group number from student number
+def extract_group_number(student_num):
+    return student_num.split('[')[1].split(']')[0]
+
+# Group students by group number
+grouped_students = {}
+for entry in data_dicts:
+    group_num = extract_group_number(entry['Student_Num'])
+    if group_num not in grouped_students:
+        grouped_students[group_num] = []
+    grouped_students[group_num].append(entry)
+
+# Function to sort students by subjects
+def sort_students_by_subjects(students):
+    return sorted(students, key=lambda x: (x['SubjA'], x['SubjB'], x['SubjC'], x['SubjD'], x['SubjE'], x['SubjF'], x['SubjG'], x['SubjH'], x['SubjI'], x['SubjJ'], x['SubjK'], x['SubjL'], x['SubjM'], x['SubjN'], x['SubjO'], x['SubjP'], x['SubjQ'], x['SubjR'], x['SubjS'], x['SubjT'], x['SubjU'], x['SubjV'], x['SubjW'], x['SubjX'], x['SubjY'], x['SubjZ']))
+
+# Sort students by subjects for each group
+for group_num, students in grouped_students.items():
+    grouped_students[group_num] = sort_students_by_subjects(students)
+
+# Print the sorted students for each group
+for group_num, students in grouped_students.items():
+    print(f"Group {group_num}:")
+    for student in students:
+        print(student)
+
+
+#####################################
+from openpyxl import Workbook
+from openpyxl.styles import Border, Side
+
+# Create a new Excel workbook
+wb = Workbook()
+ws = wb.active
+
+# Data to be placed in the cells
+data = [
+    ['___', '________', '___'],
+    ['_', '_', '_']
+]
+
+# Function to add borders to a group of cells
+def add_borders(start_row, start_col, end_row, end_col):
+    for row in range(start_row, end_row + 1):
+        for col in range(start_col, end_col + 1):
+            if row == start_row:
+                ws.cell(row=row, column=col).border = Border(top=Side(style='thin'))
+            if row == end_row:
+                ws.cell(row=row, column=col).border = Border(bottom=Side(style='thin'))
+            if col == start_col:
+                ws.cell(row=row, column=col).border = Border(left=Side(style='thin'))
+            if col == end_col:
+                ws.cell(row=row, column=col).border = Border(right=Side(style='thin'))
+
+# Add data to Excel sheet
+for i, row_data in enumerate(data, 1):
+    for j, value in enumerate(row_data, 1):
+        ws.cell(row=i, column=j, value=value)
+
+# Add borders to each group of cells
+add_borders(1, 1, 1, 3)  # First group of cells
+add_borders(2, 1, 2, 1)  # Second group of cells
+add_borders(2, 3, 2, 3)  # Third group of cells
+
+# Add some space between data cell groups
+ws.merge_cells(start_row=1, start_column=4, end_row=1, end_column=6)
+ws.merge_cells(start_row=2, start_column=2, end_row=2, end_column=2)
+
+# Save Excel file
+wb.save('layout.xlsx')
